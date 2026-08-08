@@ -127,10 +127,10 @@ class SensitiveFileDetector:
         path = parsed.path.lower()
         filename = path.rsplit("/", 1)[-1] if "/" in path else path
 
-        # Check each category
+        # Check each category - check both filename and full path
         for category, patterns in self.compiled_patterns.items():
             for pattern in patterns:
-                if pattern.search(filename):
+                if pattern.search(filename) or pattern.search(path):
                     return self._category_to_type_severity(category)
 
         # Check sensitive document extensions
@@ -140,6 +140,12 @@ class SensitiveFileDetector:
                 if self._has_sensitive_keyword(filename):
                     return (ResourceType.POTENTIAL_SENSITIVE_DOCUMENT, Severity.MEDIUM)
                 return (ResourceType.PUBLIC_DOCUMENT, Severity.LOW)
+
+        # Check for images
+        image_extensions = {".jpg", ".jpeg", ".png", ".gif", ".svg", ".webp", ".ico", ".bmp"}
+        for ext in image_extensions:
+            if filename.endswith(ext):
+                return (ResourceType.PUBLIC_IMAGE, Severity.INFORMATIONAL)
 
         return (ResourceType.PUBLIC_EXPECTED, Severity.INFORMATIONAL)
 
