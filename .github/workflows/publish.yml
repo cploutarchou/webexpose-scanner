@@ -131,7 +131,9 @@ jobs:
   publish-to-pypi:
     name: Publish to PyPI
     needs: [check-version, build]
-    if: needs.check-version.outputs.changed == 'true'
+    if: |
+      needs.check-version.outputs.changed == 'true' && 
+      (github.event_name == 'release' || github.event_name == 'push')
     runs-on: ubuntu-latest
     environment:
       name: pypi
