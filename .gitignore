@@ -162,6 +162,7 @@ scan_targets/
 *notes*.md
 *TODO*.md
 *internal*.md
+*internal*.md
 
 # Session and cache files
 *.session
@@ -224,3 +225,12 @@ sensitive_data.json
 # *.template
 # .env.example
 # config.example.json
+
+# ============================================================================
+# INTERNAL DOCUMENTATION (Not for public repo)
+# ============================================================================
+PYPI_CHECKLIST.md
+PYPI_SETUP.md
+GITHUB_SETUP.md
+AGENTS.md
+.codex/
