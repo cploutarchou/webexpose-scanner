@@ -1,13 +1,53 @@
 name: Publish to PyPI
 
 on:
+  push:
+    branches: [main]
+    paths:
+      - 'pyproject.toml'
   release:
     types: [published]
-  workflow_dispatch:  # Allow manual triggering
+  workflow_dispatch:
 
 jobs:
+  check-version:
+    name: Check Version Change
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.get-version.outputs.version }}
+      changed: ${{ steps.check-change.outputs.changed }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - name: Get current version
+        id: get-version
+        run: |
+          VERSION=$(grep '^version = ' pyproject.toml | cut -d'"' -f2)
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "Current version: $VERSION"
+
+      - name: Check if version changed
+        id: check-change
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "changed=true" >> $GITHUB_OUTPUT
+            echo "Manual trigger - will publish"
+          elif [ "${{ github.event_name }}" = "release" ]; then
+            echo "changed=true" >> $GITHUB_OUTPUT
+            echo "Release trigger - will publish"
+          else
+            # Check if version changed in the last commit
+            git diff HEAD~1 HEAD -- pyproject.toml | grep -q '^+version = ' && \
+              echo "changed=true" >> $GITHUB_OUTPUT || \
+              echo "changed=false" >> $GITHUB_OUTPUT
+          fi
+
   test:
     name: Run Tests
+    needs: check-version
+    if: needs.check-version.outputs.changed == 'true'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -33,7 +73,8 @@ jobs:
 
   build:
     name: Build Distribution
-    needs: test
+    needs: [check-version, test]
+    if: needs.check-version.outputs.changed == 'true'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -53,9 +94,43 @@ jobs:
           name: python-package-distributions
           path: dist/
 
+  create-release:
+    name: Create GitHub Release
+    needs: [check-version, build]
+    if: |
+      needs.check-version.outputs.changed == 'true' && 
+      github.event_name == 'push'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: v${{ needs.check-version.outputs.version }}
+          name: Release v${{ needs.check-version.outputs.version }}
+          body: |
+            ## WebExpose Scanner v${{ needs.check-version.outputs.version }}
+            
+            Automated release triggered by version update in `pyproject.toml`.
+            
+            ### Installation
+            ```bash
+            pip install webexpose-scanner==${{ needs.check-version.outputs.version }}
+            ```
+            
+            ### Changes
+            See commit history for details.
+          draft: false
+          prerelease: false
+          generate_release_notes: true
+
   publish-to-pypi:
     name: Publish to PyPI
-    needs: build
+    needs: [check-version, build]
+    if: needs.check-version.outputs.changed == 'true'
     runs-on: ubuntu-latest
     environment:
       name: pypi
@@ -74,9 +149,11 @@ jobs:
 
   publish-to-testpypi:
     name: Publish to TestPyPI
-    needs: build
+    needs: [check-version, build]
+    if: |
+      needs.check-version.outputs.changed == 'true' && 
+      github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
-    if: github.event_name == 'workflow_dispatch'  # Only on manual trigger
     environment:
       name: testpypi
       url: https://test.pypi.org/p/webexpose-scanner
@@ -93,4 +170,3 @@ jobs:
         uses: pypa/gh-action-pypi-publish@release/v1
         with:
           repository-url: https://test.pypi.org/legacy/
-
