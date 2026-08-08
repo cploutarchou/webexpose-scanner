@@ -108,10 +108,10 @@ debug.log
 *_secret*.txt
 *_secret*.json
 *_secret*.md
-*secret*
-*credential*
-*password*
-*private*
+secrets.txt
+credentials.txt
+passwords.txt
+private_keys.txt
 
 # ============================================================================
 # SCAN REPORTS AND OUTPUT
