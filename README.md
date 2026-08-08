@@ -1,11 +1,5 @@
 # WebExpose Scanner
 
-**A simple tool to check your websites for exposed files and sensitive information.**
-
-**Made by:** Christos Ploutarchou  
-**Contact:** cploutarchou@gmail.com  
-**GitHub:** https://github.com/cploutarchou/webexpose-scanner
-
 ---
 
 ## ⚠️ Important - Read This First
@@ -384,8 +378,3 @@ This project started as something forgotten on my disk and is now a tool that ca
 Security matters, and we all do our part when we share knowledge and tools with each other.
 
 ---
-
-**Version:** 1.0.0  
-**Updated:** 2026  
-**Made with ❤️ by Christos Ploutarchou**  
-**GitHub:** https://github.com/cploutarchou/webexpose-scanner
