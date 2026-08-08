@@ -2,12 +2,12 @@ name: Publish to PyPI
 
 on:
   push:
-    branches: [main, master]  # Support both main and master
+    branches: [master]
     paths:
-      - 'pyproject.toml'  # Only trigger when pyproject.toml changes
+      - 'pyproject.toml'
   release:
     types: [published]
-  workflow_dispatch:  # Allow manual triggering
+  workflow_dispatch:
 
 jobs:
   check-version:
