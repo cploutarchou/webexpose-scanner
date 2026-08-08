@@ -2,9 +2,6 @@
 """Target scope validation and normalization."""
 
 import ipaddress
-import re
-import socket
-from typing import Optional, Tuple
 from urllib.parse import urlparse, urlunparse
 
 from scanner.models import ScanTarget
@@ -36,7 +33,7 @@ GCP_METADATA_IP = "metadata.google.internal"
 AZURE_METADATA_IP = "169.254.169.254"
 
 
-def normalize_url(url: str) -> Tuple[str, str, str, Optional[int], str]:
+def normalize_url(url: str) -> tuple[str, str, str, int | None, str]:
     """
     Normalize and validate a target URL.
 

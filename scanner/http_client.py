@@ -3,14 +3,13 @@
 
 import asyncio
 import time
-from typing import Optional, Dict, List, Any, Tuple
-from urllib.parse import urlparse
+from typing import Any
 
 import httpx
-from httpx import AsyncClient, Response, RequestError
+from httpx import AsyncClient, RequestError, Response
 
 from scanner.models import HTTPResponse, ScanConfiguration
-from scanner.scope import is_safe_redirect, RedirectOutOfScopeError
+from scanner.scope import RedirectOutOfScopeError, is_safe_redirect
 
 
 class SecurityHTTPClient:
@@ -41,7 +40,7 @@ class SecurityHTTPClient:
         self.request_semaphore = asyncio.Semaphore(configuration.workers)
 
         # HTTP client setup
-        self.client: Optional[AsyncClient] = None
+        self.client: AsyncClient | None = None
 
         # Statistics
         self.total_requests = 0
@@ -88,7 +87,7 @@ class SecurityHTTPClient:
 
     async def _validate_response_redirect(
         self, response: Response
-    ) -> Optional[str]:
+    ) -> str | None:
         """
         Validate that any redirect is within authorized scope.
 
@@ -118,7 +117,7 @@ class SecurityHTTPClient:
 
     async def _fetch_with_retry(
         self, url: str, method: str = "GET", **kwargs
-    ) -> Optional[Response]:
+    ) -> Response | None:
         """
         Fetch a URL with retries and error handling.
 
@@ -175,7 +174,7 @@ class SecurityHTTPClient:
             print(f"[FAILED] Could not fetch {url} after {self.config.retry_count} attempts")
         return None
 
-    async def fetch_url(self, url: str) -> Optional[HTTPResponse]:
+    async def fetch_url(self, url: str) -> HTTPResponse | None:
         """
         Fetch a URL and return comprehensive HTTP response information.
 
@@ -276,8 +275,8 @@ class SecurityHTTPClient:
         )
 
     async def fetch_multiple(
-        self, urls: List[str], progress_callback=None
-    ) -> List[Optional[HTTPResponse]]:
+        self, urls: list[str], progress_callback=None
+    ) -> list[HTTPResponse | None]:
         """
         Fetch multiple URLs concurrently.
 
@@ -291,7 +290,7 @@ class SecurityHTTPClient:
         results = []
         completed = 0
 
-        async def fetch_with_progress(url: str) -> Optional[HTTPResponse]:
+        async def fetch_with_progress(url: str) -> HTTPResponse | None:
             nonlocal completed
             result = await self.fetch_url(url)
             completed += 1
@@ -314,7 +313,7 @@ class SecurityHTTPClient:
 
         return processed_results
 
-    def get_statistics(self) -> Dict[str, Any]:
+    def get_statistics(self) -> dict[str, Any]:
         """Get client statistics."""
         return {
             "total_requests": self.total_requests,

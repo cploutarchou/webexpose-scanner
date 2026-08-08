@@ -1,13 +1,19 @@
 #!/usr/bin/env python3
 """Web crawler for recursive page discovery."""
 
-import asyncio
 from collections import deque
-from typing import List, Set, Optional, Callable, Dict, Any
+from collections.abc import Callable
+from typing import Any
 
-from scanner.models import URLInfo, DiscoverySource, ScanTarget, ScanConfiguration, HTTPResponse
-from scanner.http_client import SecurityHTTPClient
 from scanner.discovery import PassiveDiscovery, normalize_url
+from scanner.http_client import SecurityHTTPClient
+from scanner.models import (
+    DiscoverySource,
+    HTTPResponse,
+    ScanConfiguration,
+    ScanTarget,
+    URLInfo,
+)
 
 
 class WebCrawler:
@@ -35,13 +41,13 @@ class WebCrawler:
         self.discovery = PassiveDiscovery(target, configuration, http_client)
 
         # Crawling state
-        self.visited_urls: Set[str] = set()
+        self.visited_urls: set[str] = set()
         self.queue: deque = deque()
         self.crawled_pages = 0
 
         # Discovered resources
-        self.discovered_urls: List[URLInfo] = []
-        self.page_responses: Dict[str, HTTPResponse] = {}
+        self.discovered_urls: list[URLInfo] = []
+        self.page_responses: dict[str, HTTPResponse] = {}
 
         # Statistics
         self.total_urls_found = 0
@@ -49,8 +55,8 @@ class WebCrawler:
 
     async def crawl(
         self,
-        progress_callback: Optional[Callable[[int, int], None]] = None,
-    ) -> List[URLInfo]:
+        progress_callback: Callable[[int, int], None] | None = None,
+    ) -> list[URLInfo]:
         """
         Perform recursive crawl starting from base URL.
 
@@ -168,9 +174,9 @@ class WebCrawler:
 
     async def recursive_discovery(
         self,
-        seed_urls: List[str],
-        max_depth: Optional[int] = None,
-    ) -> List[URLInfo]:
+        seed_urls: list[str],
+        max_depth: int | None = None,
+    ) -> list[URLInfo]:
         """
         Perform recursive discovery starting from seed URLs.
 
@@ -199,7 +205,7 @@ class WebCrawler:
 
         return discovered
 
-    def get_statistics(self) -> Dict[str, Any]:
+    def get_statistics(self) -> dict[str, Any]:
         """Get crawler statistics."""
         return {
             "pages_crawled": self.crawled_pages,

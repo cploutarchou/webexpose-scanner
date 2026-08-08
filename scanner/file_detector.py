@@ -2,14 +2,16 @@
 """Detection of exposed sensitive files."""
 
 import re
-from typing import List, Set, Optional, Dict, Any
 from urllib.parse import urlparse
 
 from scanner.models import (
-    DiscoveredResource, ResourceType, Severity, URLInfo,
-    DiscoverySource, HTTPResponse
+    DiscoveredResource,
+    DiscoverySource,
+    HTTPResponse,
+    ResourceType,
+    Severity,
+    URLInfo,
 )
-from scanner.discovery import PassiveDiscovery
 
 
 class SensitiveFileDetector:
@@ -173,7 +175,7 @@ class SensitiveFileDetector:
     def analyze_resource(
         self,
         url_info: URLInfo,
-        http_response: Optional[HTTPResponse] = None,
+        http_response: HTTPResponse | None = None,
     ) -> DiscoveredResource:
         """
         Analyze a discovered resource for sensitivity.
@@ -216,7 +218,7 @@ class SensitiveFileDetector:
 
         return resource
 
-    def get_curated_sensitive_paths(self) -> List[str]:
+    def get_curated_sensitive_paths(self) -> list[str]:
         """
         Get a curated list of common sensitive paths to check.
 
@@ -282,8 +284,8 @@ class SensitiveFileDetector:
         self,
         path: str,
         base_url: str,
-        http_response: Optional[HTTPResponse] = None,
-    ) -> Optional[DiscoveredResource]:
+        http_response: HTTPResponse | None = None,
+    ) -> DiscoveredResource | None:
         """
         Analyze a specific path for exposure.
 
@@ -296,6 +298,7 @@ class SensitiveFileDetector:
             DiscoveredResource if the path is sensitive, None otherwise
         """
         from urllib.parse import urljoin
+
         from scanner.discovery import normalize_url
 
         full_url = urljoin(base_url, path)

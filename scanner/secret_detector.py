@@ -2,10 +2,9 @@
 """Detection of secrets in exposed files."""
 
 import re
-from typing import List, Optional, Pattern, Dict, Any
-from enum import Enum
+from typing import Any
 
-from scanner.models import SecretMatch, SecretType, DiscoveredResource
+from scanner.models import DiscoveredResource, SecretMatch, SecretType
 
 
 class SecretDetector:
@@ -17,7 +16,7 @@ class SecretDetector:
     """
 
     # Secret patterns with confidence levels
-    SECRET_PATTERNS: Dict[SecretType, List[tuple[str, float]]] = {
+    SECRET_PATTERNS: dict[SecretType, list[tuple[str, float]]] = {
         SecretType.AWS_CREDENTIALS: [
             # AWS Access Key ID
             (r'AKIA[0-9A-Z]{16}', 0.95),  # AWS Access Key
@@ -183,7 +182,7 @@ class SecretDetector:
         content: str,
         context_url: str,
         max_line_length: int = 1000,
-    ) -> List[SecretMatch]:
+    ) -> list[SecretMatch]:
         """
         Detect secrets in text content.
 
@@ -266,7 +265,7 @@ class SecretDetector:
 
         return resource
 
-    def get_statistics(self, resources: List[DiscoveredResource]) -> Dict[str, Any]:
+    def get_statistics(self, resources: list[DiscoveredResource]) -> dict[str, Any]:
         """
         Get statistics about secrets found in resources.
 

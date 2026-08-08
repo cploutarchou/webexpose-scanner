@@ -3,11 +3,10 @@
 
 import asyncio
 import sys
+
 import typer
 
-from scanner import (
-    WebExposureScanner, ScanConfiguration, ScopeValidationError
-)
+from scanner import ScanConfiguration, ScopeValidationError, WebExposureScanner
 
 # CLI Application
 app = typer.Typer(
@@ -111,7 +110,7 @@ Potential sensitive files:   {stats.potential_sensitive_files}
     print(f"\nSecrets detected:            {stats.total_secrets_found}")
 
     # Report files
-    print(f"""
+    print("""
 ================================================================================
                               REPORT FILES
 ================================================================================
@@ -137,7 +136,7 @@ Potential sensitive files:   {stats.potential_sensitive_files}
 
     # Urgent findings alert
     if stats.critical_count > 0 or stats.high_count > 0:
-        print(f"""
+        print("""
 ================================================================================
                         [!] IMMEDIATE ATTENTION REQUIRED
 ================================================================================

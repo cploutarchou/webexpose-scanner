@@ -4,7 +4,6 @@
 from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum
-from typing import Optional, List, Dict, Any, Set
 from urllib.parse import urlparse
 
 
@@ -68,8 +67,8 @@ class SecretMatch:
     secret_type: SecretType
     pattern: str
     redacted_value: str
-    line_number: Optional[int] = None
-    context: Optional[str] = None
+    line_number: int | None = None
+    context: str | None = None
     confidence: float = 0.8  # 0.0 to 1.0
 
 
@@ -79,7 +78,7 @@ class URLInfo:
     url: str
     normalized_url: str
     discovery_source: DiscoverySource
-    discovery_context: Optional[str] = None  # Where in the source it was found
+    discovery_context: str | None = None  # Where in the source it was found
 
     @property
     def domain(self) -> str:
@@ -106,34 +105,34 @@ class HTTPResponse:
     url: str
     final_url: str  # After redirects
     status_code: int
-    content_type: Optional[str] = None
-    content_length: Optional[int] = None
-    last_modified: Optional[str] = None
-    etag: Optional[str] = None
-    server: Optional[str] = None
-    title: Optional[str] = None
-    headers: Dict[str, str] = field(default_factory=dict)
-    redirect_chain: List[str] = field(default_factory=list)
+    content_type: str | None = None
+    content_length: int | None = None
+    last_modified: str | None = None
+    etag: str | None = None
+    server: str | None = None
+    title: str | None = None
+    headers: dict[str, str] = field(default_factory=dict)
+    redirect_chain: list[str] = field(default_factory=list)
     is_directory_listing: bool = False
-    response_sample: Optional[str] = None  # First N bytes for analysis
-    error: Optional[str] = None
+    response_sample: str | None = None  # First N bytes for analysis
+    error: str | None = None
 
 
 @dataclass
 class DiscoveredResource:
     """A discovered resource with full analysis."""
     url_info: URLInfo
-    http_response: Optional[HTTPResponse] = None
+    http_response: HTTPResponse | None = None
     resource_type: ResourceType = ResourceType.PUBLIC_EXPECTED
     severity: Severity = Severity.INFORMATIONAL
     confidence: float = 1.0  # 0.0 to 1.0
-    title: Optional[str] = None
-    description: Optional[str] = None
-    evidence: Optional[str] = None
+    title: str | None = None
+    description: str | None = None
+    evidence: str | None = None
     is_current: bool = True  # vs historical
     is_accessible: bool = False
-    secrets: List[SecretMatch] = field(default_factory=list)
-    tags: Set[str] = field(default_factory=set)
+    secrets: list[SecretMatch] = field(default_factory=list)
+    tags: set[str] = field(default_factory=set)
     discovered_at: datetime = field(default_factory=datetime.utcnow)
 
     def add_secret(self, secret: SecretMatch) -> None:
@@ -152,8 +151,8 @@ class ScanTarget:
     scheme: str
     hostname: str
     base_domain: str
-    port: Optional[int] = None
-    canonical_hostname: Optional[str] = None
+    port: int | None = None
+    canonical_hostname: str | None = None
 
     @property
     def base_url(self) -> str:
@@ -210,7 +209,7 @@ class ScanConfiguration:
 class ScanStatistics:
     """Statistics from a security scan."""
     start_time: datetime
-    end_time: Optional[datetime] = None
+    end_time: datetime | None = None
 
     urls_discovered: int = 0
     urls_checked: int = 0
@@ -233,7 +232,7 @@ class ScanStatistics:
     total_secrets_found: int = 0
 
     @property
-    def duration_seconds(self) -> Optional[float]:
+    def duration_seconds(self) -> float | None:
         """Get scan duration in seconds."""
         if self.end_time:
             return (self.end_time - self.start_time).total_seconds()
@@ -249,9 +248,9 @@ class SecurityFinding:
     description: str
     evidence: str
     remediation: str
-    references: List[str] = field(default_factory=list)
-    cwe: Optional[str] = None  # CWE identifier if applicable
-    owasp: Optional[str] = None  # OWASP category if applicable
+    references: list[str] = field(default_factory=list)
+    cwe: str | None = None  # CWE identifier if applicable
+    owasp: str | None = None  # OWASP category if applicable
 
 
 @dataclass
@@ -260,20 +259,20 @@ class ScanReport:
     target: ScanTarget
     configuration: ScanConfiguration
     statistics: ScanStatistics
-    findings: List[SecurityFinding]
-    all_resources: List[DiscoveredResource]
+    findings: list[SecurityFinding]
+    all_resources: list[DiscoveredResource]
 
     # Categorized findings for quick access
-    critical_findings: List[SecurityFinding] = field(default_factory=list)
-    high_findings: List[SecurityFinding] = field(default_factory=list)
-    medium_findings: List[SecurityFinding] = field(default_factory=list)
-    low_findings: List[SecurityFinding] = field(default_factory=list)
-    info_findings: List[SecurityFinding] = field(default_factory=list)
+    critical_findings: list[SecurityFinding] = field(default_factory=list)
+    high_findings: list[SecurityFinding] = field(default_factory=list)
+    medium_findings: list[SecurityFinding] = field(default_factory=list)
+    low_findings: list[SecurityFinding] = field(default_factory=list)
+    info_findings: list[SecurityFinding] = field(default_factory=list)
 
     # Historical data
-    search_indexed_resources: List[DiscoveredResource] = field(default_factory=list)
-    common_crawl_resources: List[DiscoveredResource] = field(default_factory=list)
-    web_archive_resources: List[DiscoveredResource] = field(default_factory=list)
+    search_indexed_resources: list[DiscoveredResource] = field(default_factory=list)
+    common_crawl_resources: list[DiscoveredResource] = field(default_factory=list)
+    web_archive_resources: list[DiscoveredResource] = field(default_factory=list)
 
     # Metadata
     scan_version: str = "1.0.0"

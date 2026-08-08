@@ -1,9 +1,14 @@
 """Tests for scope validation and URL normalization."""
 
 import pytest
+
 from scanner.scope import (
-    normalize_url, extract_base_domain, validate_hostname_not_private,
-    is_safe_redirect, create_scan_target, ScopeValidationError,
+    ScopeValidationError,
+    create_scan_target,
+    extract_base_domain,
+    is_safe_redirect,
+    normalize_url,
+    validate_hostname_not_private,
 )
 
 
@@ -91,7 +96,6 @@ class TestPrivateIPValidation:
         try:
             validate_hostname_not_private("localhost")
             # If it doesn't raise, that's also acceptable for now
-            pass
         except ScopeValidationError:
             pass  # Expected
 

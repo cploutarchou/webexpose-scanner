@@ -1,23 +1,27 @@
 #!/usr/bin/env python3
 """Main scanner orchestration - coordinates all components."""
 
-import asyncio
-from datetime import datetime, timezone
-from typing import List, Optional, Dict, Any
+from datetime import UTC, datetime
+from typing import Any
 
-from scanner.models import (
-    ScanTarget, ScanConfiguration, ScanStatistics, ScanReport,
-    DiscoveredResource, URLInfo, HTTPResponse, DiscoverySource, SecurityFinding,
-    Severity, ResourceType
-)
-from scanner.scope import create_scan_target
-from scanner.http_client import SecurityHTTPClient
-from scanner.discovery import PassiveDiscovery, normalize_url
 from scanner.crawler import WebCrawler
+from scanner.discovery import PassiveDiscovery, normalize_url
 from scanner.file_detector import SensitiveFileDetector
-from scanner.secret_detector import SecretDetector
-from scanner.risk import RiskAssessor
+from scanner.http_client import SecurityHTTPClient
+from scanner.models import (
+    DiscoveredResource,
+    DiscoverySource,
+    ResourceType,
+    ScanConfiguration,
+    ScanReport,
+    ScanStatistics,
+    Severity,
+    URLInfo,
+)
 from scanner.reporter import ReportGenerator
+from scanner.risk import RiskAssessor
+from scanner.scope import create_scan_target
+from scanner.secret_detector import SecretDetector
 
 
 class WebExposureScanner:
@@ -27,7 +31,7 @@ class WebExposureScanner:
     Coordinates all components to perform comprehensive web exposure scanning.
     """
 
-    def __init__(self, target_url: str, configuration: Optional[ScanConfiguration] = None):
+    def __init__(self, target_url: str, configuration: ScanConfiguration | None = None):
         """
         Initialize the scanner.
 
@@ -42,20 +46,20 @@ class WebExposureScanner:
         self.configuration = configuration or ScanConfiguration()
 
         # Initialize components
-        self.http_client: Optional[SecurityHTTPClient] = None
+        self.http_client: SecurityHTTPClient | None = None
         self.discovery = PassiveDiscovery(self.target, self.configuration, None)  # Will be set in run
-        self.crawler: Optional[WebCrawler] = None
+        self.crawler: WebCrawler | None = None
         self.file_detector = SensitiveFileDetector()
         self.secret_detector = SecretDetector()
         self.risk_assessor = RiskAssessor()
         self.reporter = ReportGenerator(self.configuration.output_directory)
 
         # Statistics
-        self.statistics = ScanStatistics(start_time=datetime.now(timezone.utc))
+        self.statistics = ScanStatistics(start_time=datetime.now(UTC))
 
         # Results storage
-        self.discovered_resources: List[DiscoveredResource] = []
-        self.all_url_infos: List[URLInfo] = []
+        self.discovered_resources: list[DiscoveredResource] = []
+        self.all_url_infos: list[URLInfo] = []
 
     async def run(self) -> ScanReport:
         """
@@ -64,7 +68,7 @@ class WebExposureScanner:
         Returns:
             ScanReport with all findings and data
         """
-        print(f"\n=== Web Exposure Scanner ===")
+        print("\n=== Web Exposure Scanner ===")
         print(f"Target: {self.target.base_url}")
         print(f"Configuration: {self.configuration.max_pages} pages, {self.configuration.max_depth} depth")
         print(f"Workers: {self.configuration.workers}, Rate limit: {self.configuration.rate_limit}s")
@@ -106,7 +110,7 @@ class WebExposureScanner:
             await self._generate_findings()
 
             # Complete statistics
-            self.statistics.end_time = datetime.now(timezone.utc)
+            self.statistics.end_time = datetime.now(UTC)
 
         # Generate report
         print("[*] Phase 7: Generating reports")
@@ -302,13 +306,13 @@ class WebExposureScanner:
         # Generate reports on disk
         generated_reports = self.reporter.generate_all_reports(report)
 
-        print(f"\n[*] Reports generated:")
+        print("\n[*] Reports generated:")
         for format_name, file_path in generated_reports.items():
             print(f"    {format_name.upper()}: {file_path}")
 
         return report
 
-    def get_summary(self) -> Dict[str, Any]:
+    def get_summary(self) -> dict[str, Any]:
         """Get scan summary."""
         return {
             "target": self.target.base_url,
@@ -329,7 +333,7 @@ class WebExposureScanner:
         }
 
 
-async def scan_target(target_url: str, configuration: Optional[ScanConfiguration] = None) -> ScanReport:
+async def scan_target(target_url: str, configuration: ScanConfiguration | None = None) -> ScanReport:
     """
     Convenience function to scan a target.
 

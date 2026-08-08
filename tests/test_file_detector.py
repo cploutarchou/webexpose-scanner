@@ -1,9 +1,8 @@
 """Tests for file detection and classification."""
 
-import pytest
-from scanner.file_detector import SensitiveFileDetector
-from scanner.models import ResourceType, Severity, DiscoverySource, URLInfo
 from scanner.discovery import normalize_url
+from scanner.file_detector import SensitiveFileDetector
+from scanner.models import DiscoverySource, ResourceType, Severity, URLInfo
 
 
 class TestSensitiveFileDetector:

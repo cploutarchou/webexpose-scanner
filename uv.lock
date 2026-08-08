@@ -806,7 +806,7 @@ wheels = [
 ]
 
 [[package]]
-name = "web-exposure-scanner"
+name = "webexpose-scanner"
 version = "1.0.0"
 source = { editable = "." }
 dependencies = [

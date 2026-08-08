@@ -1,11 +1,14 @@
 #!/usr/bin/env python3
 """Risk assessment and severity assignment."""
 
-from typing import List, Dict, Any, Optional
 
 from scanner.models import (
-    DiscoveredResource, ResourceType, Severity, SecretType,
-    SecurityFinding, ScanTarget
+    DiscoveredResource,
+    ResourceType,
+    ScanTarget,
+    SecretType,
+    SecurityFinding,
+    Severity,
 )
 
 
@@ -339,8 +342,8 @@ class RiskAssessor:
         return base_remediation
 
     def categorize_resources(
-        self, resources: List[DiscoveredResource]
-    ) -> Dict[str, List[DiscoveredResource]]:
+        self, resources: list[DiscoveredResource]
+    ) -> dict[str, list[DiscoveredResource]]:
         """
         Categorize resources by type for reporting.
 

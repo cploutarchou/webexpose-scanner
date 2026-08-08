@@ -3,13 +3,11 @@
 
 import json
 import os
-from datetime import datetime
-from typing import List, Dict, Any, Optional
-from pathlib import Path
+from typing import Any
 
 from scanner.models import (
-    ScanReport, SecurityFinding, Severity, DiscoveredResource,
-    ResourceType, ScanStatistics
+    ScanReport,
+    Severity,
 )
 from scanner.risk import RiskAssessor
 
@@ -40,7 +38,7 @@ class ReportGenerator:
 
         with open(report_path, "w", encoding="utf-8") as f:
             # Title and metadata
-            f.write(f"# Web Exposure Security Assessment\n\n")
+            f.write("# Web Exposure Security Assessment\n\n")
             f.write(f"**Target:** {report.target.base_url}\n")
             f.write(f"**Generated:** {report.generated_at.strftime('%Y-%m-%d %H:%M:%S UTC')}\n")
             f.write(f"**Scan Version:** {report.scan_version}\n\n")
@@ -380,7 +378,7 @@ class ReportGenerator:
 
         return report_path
 
-    def _report_to_dict(self, report: ScanReport) -> Dict[str, Any]:
+    def _report_to_dict(self, report: ScanReport) -> dict[str, Any]:
         """Convert report to dictionary for JSON serialization."""
         return {
             "target": {
@@ -456,7 +454,7 @@ class ReportGenerator:
         with open(report_path, "w", encoding="utf-8") as f:
             f.write(f"Web Exposure Scan - {report.target.base_url}\n")
             f.write(f"Generated: {report.generated_at.strftime('%Y-%m-%d %H:%M:%S UTC')}\n")
-            f.write(f"=" * 80 + "\n\n")
+            f.write("=" * 80 + "\n\n")
 
             # Write all discovered URLs
             for resource in report.all_resources:
@@ -465,7 +463,7 @@ class ReportGenerator:
 
         return report_path
 
-    def generate_all_reports(self, report: ScanReport) -> Dict[str, str]:
+    def generate_all_reports(self, report: ScanReport) -> dict[str, str]:
         """
         Generate all report formats.
 

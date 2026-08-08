@@ -6,10 +6,14 @@ Tests basic functionality to ensure the scanner is properly installed.
 """
 
 import sys
-import asyncio
+
 from scanner import (
-    create_scan_target, ScanConfiguration, normalize_url,
-    SensitiveFileDetector, SecretDetector, ScopeValidationError
+    ScanConfiguration,
+    ScopeValidationError,
+    SecretDetector,
+    SensitiveFileDetector,
+    create_scan_target,
+    normalize_url,
 )
 from scanner.models import DiscoverySource, URLInfo
 
@@ -19,8 +23,12 @@ def test_imports():
     print("[*] Testing imports...")
     try:
         from scanner import (
-            WebExposureScanner, SecurityHTTPClient, PassiveDiscovery,
-            WebCrawler, RiskAssessor, ReportGenerator
+            PassiveDiscovery,
+            ReportGenerator,
+            RiskAssessor,
+            SecurityHTTPClient,
+            WebCrawler,
+            WebExposureScanner,
         )
         print("  [+] All core modules imported successfully")
         return True

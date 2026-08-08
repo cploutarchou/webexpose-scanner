@@ -1,9 +1,14 @@
 """Tests for secret detection."""
 
-import pytest
-from scanner.secret_detector import SecretDetector
-from scanner.models import SecretType, URLInfo, ResourceType, DiscoverySource, DiscoveredResource
 from scanner.discovery import normalize_url
+from scanner.models import (
+    DiscoveredResource,
+    DiscoverySource,
+    ResourceType,
+    SecretType,
+    URLInfo,
+)
+from scanner.secret_detector import SecretDetector
 
 
 class TestSecretDetector:

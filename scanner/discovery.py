@@ -2,22 +2,20 @@
 """Passive discovery of URLs and resources."""
 
 import re
-from typing import List, Set, Dict, Any, Optional, Tuple
 from urllib.parse import urljoin, urlparse
 
-import httpx
 from bs4 import BeautifulSoup
 
-from scanner.models import URLInfo, DiscoverySource, ScanTarget, ScanConfiguration
 from scanner.http_client import SecurityHTTPClient
+from scanner.models import DiscoverySource, ScanConfiguration, ScanTarget, URLInfo
 
 
 class URLDeduplicator:
     """Deduplicate URLs while preserving discovery context."""
 
     def __init__(self):
-        self.seen_urls: Dict[str, URLInfo] = {}
-        self.normalized_urls: Set[str] = set()
+        self.seen_urls: dict[str, URLInfo] = {}
+        self.normalized_urls: set[str] = set()
 
     def add(self, url_info: URLInfo) -> bool:
         """
@@ -34,11 +32,11 @@ class URLDeduplicator:
         self.normalized_urls.add(url_info.normalized_url)
         return True
 
-    def get_all(self) -> List[URLInfo]:
+    def get_all(self) -> list[URLInfo]:
         """Get all unique URLs."""
         return list(self.seen_urls.values())
 
-    def get_normalized_set(self) -> Set[str]:
+    def get_normalized_set(self) -> set[str]:
         """Get set of all normalized URLs."""
         return self.normalized_urls.copy()
 
@@ -107,7 +105,7 @@ class PassiveDiscovery:
 
     IMAGE_EXTENSIONS = {
         ".jpg", ".jpeg", ".png", ".gif", ".bmp", ".svg", ".webp",
-        ".tiff", ".ico", ".png", ".psd", ".ai",
+        ".tiff", ".ico", ".psd", ".ai",
     }
 
     LOG_EXTENSIONS = {".log", ".trace", ".out", ".err"}
@@ -126,7 +124,7 @@ class PassiveDiscovery:
         self.http_client = http_client
         self.deduplicator = URLDeduplicator()
 
-    async def discover_from_html(self, html_content: str, base_url: str) -> List[URLInfo]:
+    async def discover_from_html(self, html_content: str, base_url: str) -> list[URLInfo]:
         """
         Extract URLs from HTML content.
 
@@ -179,7 +177,7 @@ class PassiveDiscovery:
 
         return urls
 
-    async def discover_from_robots_txt(self) -> List[URLInfo]:
+    async def discover_from_robots_txt(self) -> list[URLInfo]:
         """
         Discover URLs from robots.txt.
 
@@ -219,7 +217,7 @@ class PassiveDiscovery:
 
         return urls
 
-    async def discover_from_sitemap(self) -> List[URLInfo]:
+    async def discover_from_sitemap(self) -> list[URLInfo]:
         """
         Discover URLs from sitemap.xml.
 
@@ -270,7 +268,7 @@ class PassiveDiscovery:
 
         return urls
 
-    async def discover_from_javascript(self, js_content: str, base_url: str) -> List[URLInfo]:
+    async def discover_from_javascript(self, js_content: str, base_url: str) -> list[URLInfo]:
         """
         Extract URLs from JavaScript content.
 
@@ -304,7 +302,7 @@ class PassiveDiscovery:
 
         return urls
 
-    async def discover_from_css(self, css_content: str, base_url: str) -> List[URLInfo]:
+    async def discover_from_css(self, css_content: str, base_url: str) -> list[URLInfo]:
         """
         Extract URLs from CSS content.
 
@@ -351,7 +349,7 @@ class PassiveDiscovery:
 
         return True
 
-    def get_file_category(self, url: str) -> Optional[str]:
+    def get_file_category(self, url: str) -> str | None:
         """
         Categorize a URL by file extension.
 
@@ -379,7 +377,7 @@ class PassiveDiscovery:
 
         return None
 
-    async def run_initial_discovery(self) -> List[URLInfo]:
+    async def run_initial_discovery(self) -> list[URLInfo]:
         """
         Run initial passive discovery from the base URL.
 
