@@ -1,0 +1,226 @@
+# ============================================================================
+# WEBEXPOSE SCANNER - SECURE GITIGNORE
+# ============================================================================
+# This prevents accidental sharing of sensitive files and confidential data
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+pip-wheel-metadata/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Virtual Environment
+.venv/
+venv/
+ENV/
+env/
+.virtualenv/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# ============================================================================
+# SECURITY & CONFIDENTIAL FILES - CRITICAL
+# ============================================================================
+# These patterns prevent accidental exposure of sensitive information
+
+# NEVER share these files
+*.env
+*.env.*
+*.env.local
+*.env.production
+*.env.development
+*.env.backup
+*.secret
+*.credentials
+*.config
+config.json
+config.php
+database.yml
+database.php
+secrets.json
+credentials.json
+passwords.txt
+*.key
+*.pem
+*.p12
+*.pfx
+*.keystore
+id_rsa
+id_dsa
+id_ecdsa
+id_ed25519
+*.ppk
+*.cert
+*.crt
+*.cer
+
+# Database exports and backups
+*.sql
+*.sqlite
+*.sqlite3
+*.db
+*.dump
+*.backup
+*.bak
+*.old
+*.orig
+
+# Logs with sensitive data
+*.log
+logs/
+*.trace
+*.out
+*.err
+error.log
+access.log
+debug.log
+
+# Sensitive scan results
+*_SECRET*.txt
+*_SECRET*.json
+*_SECRET*.md
+*_secret*.txt
+*_secret*.json
+*_secret*.md
+*secret*
+*credential*
+*password*
+*private*
+
+# ============================================================================
+# SCAN REPORTS AND OUTPUT
+# ============================================================================
+# Prevent accidental sharing of scan results (comment out if you want to track reports)
+
+# reports/
+# *_scan_report.*
+# scan_results/
+# *_report.json
+# *_report.md
+
+# ============================================================================
+# TESTING AND COVERAGE
+# ============================================================================
+.pytest_cache/
+.coverage
+htmlcov/
+*.cover
+.hypothesis/
+
+# Type checking
+.mypy_cache/
+.dmypy.json
+dmypy.json
+*.pyc
+
+# ============================================================================
+# PROJECT SPECIFIC
+# ============================================================================
+# Scanner output and temp files
+*_scan_report.*
+scan_results/
+reports/
+*.tmp
+*.temp
+
+# Test data that might contain real targets
+test_targets.txt
+target_domains.txt
+scan_targets/
+
+# ============================================================================
+# DEVELOPMENT ARTIFACTS
+# ============================================================================
+
+# Documentation files that might contain sensitive info
+*notes*.md
+*TODO*.md
+*internal*.md
+
+# Session and cache files
+*.session
+*.cache
+.session/
+
+# ============================================================================
+# OS SPECIFIC
+# ============================================================================
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# ============================================================================
+# BACKUP FILES
+# ============================================================================
+*.bak
+*.backup
+*.old
+*.orig
+*.save
+*.swp
+*.swo
+*~
+
+# ============================================================================
+# SECURITY AUDIT FILES
+# ============================================================================
+# Files that might contain security audit results with real data
+security_audit*
+pen_test*
+vuln_scan*
+exposure_report*
+
+# ============================================================================
+# ADDITIONAL PROTECTIONS
+# ============================================================================
+# Any file that might contain API keys, tokens, or sensitive config
+api_keys.txt
+tokens.txt
+secrets.txt
+private_config.json
+sensitive_data.json
+
+# CI/CD files that might contain secrets
+.github/workflows/*-secret.yml
+.github/workflows/*-secrets.yml
+.github/secrets/
+
+# ============================================================================
+# SAFE PATTERNS (These are OK to share)
+# ============================================================================
+# Uncomment these if you want to share example files
+# *.example
+# *.sample
+# *.template
+# .env.example
+# config.example.json
