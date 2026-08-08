@@ -31,44 +31,44 @@ class RiskAssessor:
         # Source control exposure
         (ResourceType.SOURCE_CONTROL_EXPOSURE, True, True): Severity.CRITICAL,
         (ResourceType.SOURCE_CONTROL_EXPOSURE, False, True): Severity.CRITICAL,
-        (ResourceType.SOURCE_CONTROL_EXPOSURE, True, False): Severity.HIGH,
-        (ResourceType.SOURCE_CONTROL_EXPOSURE, False, False): Severity.MEDIUM,
+        (ResourceType.SOURCE_CONTROL_EXPOSURE, True, False): Severity.INFORMATIONAL,  # Not accessible = not a risk
+        (ResourceType.SOURCE_CONTROL_EXPOSURE, False, False): Severity.INFORMATIONAL,  # Not accessible = not a risk
 
         # Database exposure
         (ResourceType.DATABASE_EXPOSURE, True, True): Severity.CRITICAL,
         (ResourceType.DATABASE_EXPOSURE, False, True): Severity.CRITICAL,
-        (ResourceType.DATABASE_EXPOSURE, True, False): Severity.HIGH,
-        (ResourceType.DATABASE_EXPOSURE, False, False): Severity.MEDIUM,
+        (ResourceType.DATABASE_EXPOSURE, True, False): Severity.INFORMATIONAL,  # Not accessible = not a risk
+        (ResourceType.DATABASE_EXPOSURE, False, False): Severity.INFORMATIONAL,  # Not accessible = not a risk
 
         # Configuration exposure
         (ResourceType.CONFIGURATION_EXPOSURE, True, True): Severity.CRITICAL,
         (ResourceType.CONFIGURATION_EXPOSURE, False, True): Severity.HIGH,
-        (ResourceType.CONFIGURATION_EXPOSURE, True, False): Severity.HIGH,
-        (ResourceType.CONFIGURATION_EXPOSURE, False, False): Severity.MEDIUM,
+        (ResourceType.CONFIGURATION_EXPOSURE, True, False): Severity.INFORMATIONAL,  # Not accessible = not a risk
+        (ResourceType.CONFIGURATION_EXPOSURE, False, False): Severity.INFORMATIONAL,  # Not accessible = not a risk
 
         # Backup exposure
         (ResourceType.BACKUP_EXPOSURE, True, True): Severity.CRITICAL,
         (ResourceType.BACKUP_EXPOSURE, False, True): Severity.HIGH,
-        (ResourceType.BACKUP_EXPOSURE, True, False): Severity.HIGH,
-        (ResourceType.BACKUP_EXPOSURE, False, False): Severity.MEDIUM,
+        (ResourceType.BACKUP_EXPOSURE, True, False): Severity.INFORMATIONAL,  # Not accessible = not a risk
+        (ResourceType.BACKUP_EXPOSURE, False, False): Severity.INFORMATIONAL,  # Not accessible = not a risk
 
         # Log exposure
         (ResourceType.LOG_EXPOSURE, True, True): Severity.HIGH,
         (ResourceType.LOG_EXPOSURE, False, True): Severity.MEDIUM,
-        (ResourceType.LOG_EXPOSURE, True, False): Severity.MEDIUM,
-        (ResourceType.LOG_EXPOSURE, False, False): Severity.LOW,
+        (ResourceType.LOG_EXPOSURE, True, False): Severity.INFORMATIONAL,  # Not accessible = not a risk
+        (ResourceType.LOG_EXPOSURE, False, False): Severity.INFORMATIONAL,  # Not accessible = not a risk
 
         # Directory listing
         (ResourceType.DIRECTORY_LISTING, True, True): Severity.MEDIUM,
         (ResourceType.DIRECTORY_LISTING, False, True): Severity.MEDIUM,
-        (ResourceType.DIRECTORY_LISTING, True, False): Severity.LOW,
-        (ResourceType.DIRECTORY_LISTING, False, False): Severity.LOW,
+        (ResourceType.DIRECTORY_LISTING, True, False): Severity.INFORMATIONAL,  # Not accessible = not a risk
+        (ResourceType.DIRECTORY_LISTING, False, False): Severity.INFORMATIONAL,  # Not accessible = not a risk
 
         # Sensitive documents
         (ResourceType.POTENTIAL_SENSITIVE_DOCUMENT, True, True): Severity.HIGH,
         (ResourceType.POTENTIAL_SENSITIVE_DOCUMENT, False, True): Severity.MEDIUM,
-        (ResourceType.POTENTIAL_SENSITIVE_DOCUMENT, True, False): Severity.MEDIUM,
-        (ResourceType.POTENTIAL_SENSITIVE_DOCUMENT, False, False): Severity.LOW,
+        (ResourceType.POTENTIAL_SENSITIVE_DOCUMENT, True, False): Severity.INFORMATIONAL,  # Not accessible = not a risk
+        (ResourceType.POTENTIAL_SENSITIVE_DOCUMENT, False, False): Severity.INFORMATIONAL,  # Not accessible = not a risk
 
         # Public resources
         (ResourceType.PUBLIC_DOCUMENT, True, True): Severity.INFORMATIONAL,
