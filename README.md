@@ -189,7 +189,23 @@ I can't promise I'll have all the answers, but I'll do my best to help and learn
 
 ## 🚀 How to Install
 
-### Option 1: Using uv (Fastest)
+### Option 1: From PyPI (Easiest) ⭐
+
+**Install from PyPI** - This is the easiest way to get started!
+
+```bash
+# Install the scanner
+pip install webexpose-scanner
+
+# You're done! Now you can use it anywhere:
+webexpose audit https://your-website.com
+```
+
+That's it! No need to clone the repository or install dependencies manually.
+
+**PyPI Repository:** https://pypi.org/project/webexpose-scanner/
+
+### Option 2: Using uv (Fastest for Development)
 
 ```bash
 # Install uv (if you don't have it)
@@ -206,14 +222,54 @@ uv sync
 uv run main.py audit https://your-website.com
 ```
 
-### Option 2: Using regular Python
+### Option 3: Using regular Python (Traditional)
 
 ```bash
+# Get the code
+git clone https://github.com/cploutarchou/webexpose-scanner.git
+cd webexpose-scanner
+
 # Install needed packages
 pip install -r requirements.txt
 
 # Run the scanner
 python main.py audit https://your-website.com
+```
+
+---
+
+## ⚡ Quick Start (For PyPI Users)
+
+Just installed from PyPI? Here's how to get started in 30 seconds:
+
+```bash
+# Run your first scan
+webexpose audit https://your-website.com
+
+# The scan will:
+# 1. Discover URLs from robots.txt, sitemap.xml, and links
+# 2. Crawl your website (up to 100 pages by default)
+# 3. Check common sensitive file paths
+# 4. Look for exposed secrets
+# 5. Generate detailed reports
+
+# Check the reports
+cat reports/your-website.com/report.md
+```
+
+**That's it!** Your security report is ready in the `reports/` folder.
+
+### First Time Scanning Tips
+
+```bash
+# Start with a smaller scan (good for testing)
+webexpose audit https://your-website.com --max-pages 50
+
+# Only check for sensitive files (no crawling)
+webexpose audit https://your-website.com --passive-only
+
+# See detailed output
+webexpose audit https://your-website.com --verbose
 ```
 
 ---
@@ -448,6 +504,32 @@ If you have problems:
 
 **Report bugs or ask questions:**  
 https://github.com/cploutarchou/webexpose-scanner/issues
+
+---
+
+## 🔗 Resources
+
+### Official Links
+
+- **PyPI Package:** https://pypi.org/project/webexpose-scanner/
+- **GitHub Repository:** https://github.com/cploutarchou/webexpose-scanner
+- **Issue Tracker:** https://github.com/cploutarchou/webexpose-scanner/issues
+- **Email Support:** cploutarchou@gmail.com
+
+### Installation Methods
+
+| Method | Command | Best For |
+|--------|---------|----------|
+| **PyPI** | `pip install webexpose-scanner` | Everyone - easiest way |
+| **uv** | `uv sync` (in repo) | Development, faster |
+| **pip** | `pip install -r requirements.txt` | Traditional setup |
+| **Git Clone** | `git clone + pip install` | Contributing, source code |
+
+### Requirements
+
+- **Python 3.12 or newer**
+- **Internet connection**
+- **Permission to test target website**
 
 ---
 
