@@ -1196,6 +1196,14 @@ class SensitiveFileDetector:
         "test", "testing", "tmp", "temp",
     }
 
+    # Framework/CMS-specific categories. These are checked AFTER the generic
+    # categories so that a bare filename like "error.log" classifies generically
+    # (LOG_EXPOSURE) instead of being claimed by a framework list that happens
+    # to include the same filename. Their path-specific patterns still match.
+    _FRAMEWORK_CATEGORIES = {
+        "laravel", "wordpress", "django", "drupal", "joomla",
+    }
+
     def __init__(self):
         """Initialize the detector with compiled regex patterns."""
         self._compile_patterns()
@@ -1220,8 +1228,18 @@ class SensitiveFileDetector:
         path = parsed.path.lower()
         filename = path.rsplit("/", 1)[-1] if "/" in path else path
 
+        # Check generic categories first so bare filenames (e.g. "error.log")
+        # classify generically (LOG_EXPOSURE) rather than being claimed by a
+        # framework-specific category that happens to list the same filename.
+        # Framework-specific categories are checked afterwards; their
+        # path-specific patterns (e.g. "storage/logs/laravel.log") still match.
+        generic_first = sorted(
+            self.compiled_patterns.items(),
+            key=lambda kv: kv[0] in self._FRAMEWORK_CATEGORIES,
+        )
+
         # Check each category - check both filename and full path
-        for category, patterns in self.compiled_patterns.items():
+        for category, patterns in generic_first:
             for pattern in patterns:
                 if pattern.search(filename) or pattern.search(path):
                     return self._category_to_type_severity(category)
