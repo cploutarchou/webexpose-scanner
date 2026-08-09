@@ -37,17 +37,10 @@ class SensitiveFileDetector:
         ],
         # Laravel specific
         "laravel": [
-            # Logs
+            # Logs (framework-specific paths only; generic log filenames are handled by "logs" category)
             r"storage/logs/laravel.*\.log$",
             r"storage/logs/.*\.log$",
             r"laravel.*\.log$",
-            r"query\.log$",
-            r"error\.log$",
-            r"debug\.log$",
-            r"production\.log$",
-            r"staging\.log$",
-            r"development\.log$",
-            r"test\.log$",
             
             # Storage
             r"storage/framework/(sessions|cache|views)/",
