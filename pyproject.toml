@@ -1,6 +1,6 @@
 [project]
 name = "webexpose-scanner"
-version = "1.0.1"
+version = "1.0.2"
 authors = [
     {name = "Christos Ploutarchou", email = "cploutarchou@gmail.com"},
 ]

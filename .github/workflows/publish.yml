@@ -16,10 +16,11 @@ jobs:
     outputs:
       version: ${{ steps.get-version.outputs.version }}
       changed: ${{ steps.check-change.outputs.changed }}
+      tag_exists: ${{ steps.check-tag.outputs.exists }}
     steps:
       - uses: actions/checkout@v4
         with:
-          fetch-depth: 2
+          fetch-depth: 0
 
       - name: Get current version
         id: get-version
@@ -28,20 +29,43 @@ jobs:
           echo "version=$VERSION" >> $GITHUB_OUTPUT
           echo "Current version: $VERSION"
 
+      - name: Check if tag already exists
+        id: check-tag
+        run: |
+          VERSION="${{ steps.get-version.outputs.version }}"
+          if git rev-parse "refs/tags/v$VERSION" >/dev/null 2>&1; then
+            echo "exists=true" >> $GITHUB_OUTPUT
+            echo "Tag v$VERSION already exists"
+          else
+            echo "exists=false" >> $GITHUB_OUTPUT
+            echo "Tag v$VERSION does not exist yet"
+          fi
+
       - name: Check if version changed
         id: check-change
         run: |
-          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+          if [ "${{ steps.check-tag.outputs.exists }}" = "true" ]; then
+            echo "changed=false" >> $GITHUB_OUTPUT
+            echo "Tag already exists - skipping publish"
+          elif [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
             echo "changed=true" >> $GITHUB_OUTPUT
             echo "Manual trigger - will publish"
           elif [ "${{ github.event_name }}" = "release" ]; then
             echo "changed=true" >> $GITHUB_OUTPUT
             echo "Release trigger - will publish"
           else
-            # Check if version changed in the last commit
-            git diff HEAD~1 HEAD -- pyproject.toml | grep -q '^+version = ' && \
-              echo "changed=true" >> $GITHUB_OUTPUT || \
+            # Check if version changed compared to the most recent tag
+            LATEST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "")
+            if [ -z "$LATEST_TAG" ]; then
+              echo "changed=true" >> $GITHUB_OUTPUT
+              echo "No prior tag - will publish"
+            elif [ "v${{ steps.get-version.outputs.version }}" != "$LATEST_TAG" ]; then
+              echo "changed=true" >> $GITHUB_OUTPUT
+              echo "Version differs from latest tag $LATEST_TAG - will publish"
+            else
               echo "changed=false" >> $GITHUB_OUTPUT
+              echo "Version unchanged from $LATEST_TAG - skipping"
+            fi
           fi
 
   test:
@@ -127,6 +151,7 @@ jobs:
           draft: false
           prerelease: false
           generate_release_notes: true
+          fail_on_unmatched_files: false
 
   publish-to-pypi:
     name: Publish to PyPI
@@ -147,3 +172,5 @@ jobs:
 
       - name: Publish to PyPI
         uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          skip-existing: true
