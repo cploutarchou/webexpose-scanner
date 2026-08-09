@@ -277,7 +277,49 @@ class RiskAssessor:
         if resource.http_response and resource.http_response.is_directory_listing:
             evidence_parts.append("Directory listing is ENABLED on this resource")
 
+        # Verified content snippet: only include when the resource is genuinely
+        # accessible (content-verified, not a soft-404). Secret-looking values
+        # are redacted before inclusion.
+        if (
+            resource.is_accessible
+            and resource.http_response
+            and resource.http_response.response_sample
+        ):
+            snippet = self._redacted_content_snippet(
+                resource.http_response.response_sample
+            )
+            if snippet:
+                evidence_parts.append("\nVerified Content (redacted):")
+                evidence_parts.append(snippet)
+
         return "\n".join(evidence_parts)
+
+    @staticmethod
+    def _redacted_content_snippet(sample: str, max_lines: int = 15) -> str:
+        """
+        Return a truncated content snippet with secret-looking values redacted.
+
+        Lines that assign a value to a secret-like key (password, secret, token,
+        key, etc.) have the value replaced with [REDACTED]. This lets the report
+        prove real content was retrieved without leaking live credentials.
+        """
+        import re
+
+        secret_key = re.compile(
+            r"(?i)(password|passwd|secret|token|api[_-]?key|apikey|"
+            r"private[_-]?key|access[_-]?key|auth|credential|pwd)"
+            r"([\"']?\s*[:=]\s*[\"']?)([^\s\"']+)"
+        )
+
+        lines = sample.splitlines()
+        redacted = []
+        for line in lines[:max_lines]:
+            redacted.append(secret_key.sub(lambda m: m.group(1) + m.group(2) + "[REDACTED]", line))
+
+        snippet = "\n".join(redacted).strip()
+        if len(lines) > max_lines:
+            snippet += f"\n... ({len(lines) - max_lines} more lines)"
+        return snippet
 
     def _generate_remediation(self, resource: DiscoveredResource) -> str:
         """Generate remediation advice."""

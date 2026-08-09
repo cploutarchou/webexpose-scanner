@@ -275,7 +275,7 @@ class ScanReport:
     web_archive_resources: list[DiscoveredResource] = field(default_factory=list)
 
     # Metadata
-    scan_version: str = "1.0.0"
+    scan_version: str = "1.0.1"
     generated_at: datetime = field(default_factory=datetime.utcnow)
 
     def __post_init__(self):

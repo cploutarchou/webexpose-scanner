@@ -20,7 +20,7 @@ def print_banner():
     """Print application banner."""
     print("""
 ================================================================================
-                    WebExpose Scanner v1.0.0
+                    WebExpose Scanner v1.0.1
           Professional Web Exposure Assessment Tool
           Authorized Security Testing - Passive Discovery Only
 ================================================================================
@@ -236,7 +236,7 @@ def audit(
 @app.command()
 def version():
     """Show version information."""
-    print("WebExpose Scanner v1.0.0")
+    print("WebExpose Scanner v1.0.1")
     print("Professional web exposure assessment tool for authorized security testing")
     print("Author: Christos Ploutarchou <cploutarchou@gmail.com>")
     print("GitHub: https://github.com/cploutarchou/webexpose-scanner")

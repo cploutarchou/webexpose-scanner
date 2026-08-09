@@ -61,6 +61,10 @@ class WebExposureScanner:
         self.discovered_resources: list[DiscoveredResource] = []
         self.all_url_infos: list[URLInfo] = []
 
+        # Set during analysis: True if the target serves a catch-all 200 page
+        # (soft-404) for nonexistent paths, making bare 200s untrustworthy
+        self.catch_all_detected: bool = False
+
     async def run(self) -> ScanReport:
         """
         Execute the complete scan.
@@ -173,6 +177,10 @@ class WebExposureScanner:
 
         print(f"    Analyzing {len(self.all_url_infos)} URLs...")
 
+        # Calibrate: probe a guaranteed-nonexistent path to detect a catch-all
+        # (soft-404) page that returns HTTP 200 for every URL.
+        await self._calibrate_catch_all()
+
         # Fetch URLs in batches
         batch_size = self.configuration.workers * 2
         all_resources = []
@@ -185,7 +193,9 @@ class WebExposureScanner:
 
             for url_info, response in zip(batch, responses):
                 # Analyze the resource
-                resource = self.file_detector.analyze_resource(url_info, response)
+                resource = self.file_detector.analyze_resource(
+                    url_info, response, catch_all_detected=self.catch_all_detected
+                )
                 all_resources.append(resource)
 
                 # Update statistics
@@ -193,7 +203,7 @@ class WebExposureScanner:
                     self.statistics.currently_accessible += 1
 
                     # Categorize
-                    file_category = self.file_detector.get_file_category(url_info.url)
+                    file_category = self.discovery.get_file_category(url_info.url)
                     if file_category == "document":
                         self.statistics.documents += 1
                     elif file_category == "image":
@@ -206,6 +216,35 @@ class WebExposureScanner:
         self.statistics.urls_checked = len(all_resources)
 
         print(f"    Analyzed {len(all_resources)} resources")
+
+    async def _calibrate_catch_all(self):
+        """
+        Probe a guaranteed-nonexistent random path to detect a catch-all
+        (soft-404) page that returns HTTP 200 for every URL.
+
+        Sets self.catch_all_detected so that bare 200 responses for sensitive
+        paths can be treated as false positives.
+        """
+        if not self.http_client:
+            return
+
+        import secrets as _secrets
+        from urllib.parse import urljoin
+
+        random_path = f"wxs-calibration-{_secrets.token_hex(8)}.txt"
+        probe_url = urljoin(self.target.base_url, random_path)
+
+        try:
+            response = await self.http_client.fetch_url(probe_url)
+        except Exception:
+            response = None
+
+        if response and response.status_code == 200:
+            self.catch_all_detected = True
+            print(
+                "    [!] Catch-all/soft-404 page detected (random path returned "
+                "HTTP 200); sensitive-path 200s will be treated as false positives"
+            )
 
     async def _detect_secrets(self):
         """Detect secrets in accessible text files."""

@@ -202,3 +202,130 @@ class TestSensitiveFileDetector:
 
         # Public page should return None (not sensitive)
         assert resource is None
+
+    def test_soft_404_content_type_mismatch(self):
+        """A .env served as text/html is a soft-404 false positive, not accessible."""
+        from scanner.models import HTTPResponse
+
+        detector = SensitiveFileDetector()
+
+        url_info = URLInfo(
+            url="https://example.com/.env.production",
+            normalized_url=normalize_url("https://example.com/.env.production"),
+            discovery_source=DiscoverySource.COMMON_PATHS,
+        )
+
+        http_response = HTTPResponse(
+            url="https://example.com/.env.production",
+            final_url="https://example.com/.env.production",
+            status_code=200,
+            content_type="text/html; charset=UTF-8",
+        )
+
+        resource = detector.analyze_resource(url_info, http_response)
+
+        assert resource.is_accessible is False
+        assert resource.resource_type == ResourceType.FALSE_POSITIVE
+        assert resource.severity == Severity.INFORMATIONAL
+
+    def test_real_env_served_as_text_is_accessible(self):
+        """A .env served as text/plain is genuinely accessible (not a soft-404)."""
+        from scanner.models import HTTPResponse
+
+        detector = SensitiveFileDetector()
+
+        url_info = URLInfo(
+            url="https://example.com/.env",
+            normalized_url=normalize_url("https://example.com/.env"),
+            discovery_source=DiscoverySource.COMMON_PATHS,
+        )
+
+        http_response = HTTPResponse(
+            url="https://example.com/.env",
+            final_url="https://example.com/.env",
+            status_code=200,
+            content_type="text/plain; charset=utf-8",
+        )
+
+        resource = detector.analyze_resource(url_info, http_response)
+
+        assert resource.is_accessible is True
+        assert resource.resource_type == ResourceType.CONFIGURATION_EXPOSURE
+        assert resource.severity == Severity.HIGH
+
+    def test_catch_all_calibration_flags_html_directory(self):
+        """With catch-all detected, an HTML 200 for a sensitive dir is a false positive."""
+        from scanner.models import HTTPResponse
+
+        detector = SensitiveFileDetector()
+
+        url_info = URLInfo(
+            url="https://example.com/app/Models/",
+            normalized_url=normalize_url("https://example.com/app/Models/"),
+            discovery_source=DiscoverySource.COMMON_PATHS,
+        )
+
+        http_response = HTTPResponse(
+            url="https://example.com/app/Models/",
+            final_url="https://example.com/app/Models/",
+            status_code=200,
+            content_type="text/html; charset=UTF-8",
+        )
+
+        resource = detector.analyze_resource(url_info, http_response, catch_all_detected=True)
+
+        assert resource.is_accessible is False
+        assert resource.resource_type == ResourceType.FALSE_POSITIVE
+
+    def test_env_with_real_keyvalue_content_is_accessible(self):
+        """A .env whose body has real KEY=value lines is genuinely accessible,
+        even if served with a misleading text/html content-type."""
+        from scanner.models import HTTPResponse
+
+        detector = SensitiveFileDetector()
+
+        url_info = URLInfo(
+            url="https://example.com/.env",
+            normalized_url=normalize_url("https://example.com/.env"),
+            discovery_source=DiscoverySource.COMMON_PATHS,
+        )
+
+        # Server mislabels the content-type, but the body is real env content.
+        http_response = HTTPResponse(
+            url="https://example.com/.env",
+            final_url="https://example.com/.env",
+            status_code=200,
+            content_type="text/html; charset=UTF-8",
+            response_sample="DB_HOST=localhost\nDB_USER=root\nAPP_ENV=production\n",
+        )
+
+        resource = detector.analyze_resource(url_info, http_response)
+
+        assert resource.is_accessible is True
+        assert resource.resource_type == ResourceType.CONFIGURATION_EXPOSURE
+        assert resource.severity == Severity.HIGH
+
+    def test_env_with_html_body_is_soft_404(self):
+        """A .env whose body is HTML markup is a catch-all soft-404."""
+        from scanner.models import HTTPResponse
+
+        detector = SensitiveFileDetector()
+
+        url_info = URLInfo(
+            url="https://example.com/.env",
+            normalized_url=normalize_url("https://example.com/.env"),
+            discovery_source=DiscoverySource.COMMON_PATHS,
+        )
+
+        http_response = HTTPResponse(
+            url="https://example.com/.env",
+            final_url="https://example.com/.env",
+            status_code=200,
+            content_type="text/html; charset=UTF-8",
+            response_sample="<!DOCTYPE html><html><head><title>Home</title></head><body>...</body></html>",
+        )
+
+        resource = detector.analyze_resource(url_info, http_response)
+
+        assert resource.is_accessible is False
+        assert resource.resource_type == ResourceType.FALSE_POSITIVE

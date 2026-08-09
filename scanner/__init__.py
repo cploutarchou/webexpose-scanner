@@ -30,7 +30,7 @@ from scanner.scope import (
 )
 from scanner.secret_detector import SecretDetector
 
-__version__ = "1.0.0"
+__version__ = "1.0.1"
 __author__ = "Christos Ploutarchou <cploutarchou@gmail.com>"
 __description__ = "WebExpose Scanner - Professional web exposure assessment tool"
 

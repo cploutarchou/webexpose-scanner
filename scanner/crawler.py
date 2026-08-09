@@ -4,6 +4,7 @@
 from collections import deque
 from collections.abc import Callable
 from typing import Any
+from urllib.parse import urlparse
 
 from scanner.discovery import PassiveDiscovery, normalize_url
 from scanner.http_client import SecurityHTTPClient

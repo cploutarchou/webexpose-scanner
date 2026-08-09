@@ -42,6 +42,96 @@ It does this by:
 - Testing for exposed directories
 - Looking for patterns that look like secrets
 
+### 🎯 CMS & Framework Support
+
+WebExpose Scanner has **comprehensive detection** for the most popular CMSs and frameworks:
+
+#### **WordPress** (Most Popular CMS)
+- ✅ `wp-config.php` and all backup variants (.bak, .save, .swp, .old, .orig, ~, #, .txt, .zip, .tar.gz, etc.)
+- ✅ `wp-content/uploads/` (exposed uploads)
+- ✅ `wp-content/debug.log` and `error.log`
+- ✅ `wp-admin/` and `wp-includes/` directories
+- ✅ `wp-login.php`, `xmlrpc.php` (common attack vectors)
+- ✅ `wp-json/` (REST API exposure)
+- ✅ Plugin and theme directories
+- ✅ All wp-config.php backup variants (0-9, a-z)
+
+#### **Laravel** (PHP Framework)
+- ✅ `.env` files (all variants: .local, .production, .staging, .testing, .example, .backup, .old)
+- ✅ `storage/logs/laravel.log` and all log files
+- ✅ `storage/framework/` (sessions, cache, views)
+- ✅ `bootstrap/cache/` (config, services, packages, routes, events)
+- ✅ `config/` directory (app, database, mail, services, session, cache, queue, filesystems, auth, etc.)
+- ✅ `routes/` directory (web, api, console, channels)
+- ✅ `composer.json`, `composer.lock`, `vendor/` directory
+- ✅ `artisan` command
+- ✅ `public/storage/`, `public/.htaccess`
+- ✅ `app/` directory (Controllers, Models, Providers, etc.)
+- ✅ `database/` directory (migrations, seeds, factories)
+- ✅ `resources/` directory (views, lang, js, css, sass)
+- ✅ `tests/` directory, `phpunit.xml`
+- ✅ `webpack.mix.js`, `mix-manifest.json`, `package.json`
+- ✅ Debug tools: Telescope, Horizon, Nova, Debugbar
+- ✅ Laravel Sail, Vapor, Forge, Envoyer, Herd, Valet, Homestead
+- ✅ Laravel Octane, Sanctum, Passport, Scout, Socialite, Cashier
+- ✅ Laravel Dusk, Pint, Breeze, Jetstream, Fortify, Spark
+- ✅ Laravel Livewire, Inertia, Filament, Backpack, Voyager
+- ✅ OAuth keys (`oauth-private.key`, `oauth-public.key`)
+- ✅ Docker files (`docker-compose.yml`, `Dockerfile`)
+
+#### **Django** (Python Framework)
+- ✅ `settings.py` (all variants: base, local, production, development, staging, test)
+- ✅ `local_settings.py`, `settings_local.py`
+- ✅ `.env` files
+- ✅ `requirements.txt`, `Pipfile`, `pyproject.toml`, `poetry.lock`
+- ✅ `manage.py`, `wsgi.py`, `asgi.py`, `urls.py`
+- ✅ `db.sqlite3` (database file)
+- ✅ `__pycache__/`, `.pyc`, `.pyo` files
+- ✅ `migrations/` directory
+- ✅ `static/`, `staticfiles/`, `media/`, `templates/` directories
+- ✅ Celery files, coverage files, test files
+- ✅ `gunicorn.conf.py`, `uwsgi.ini`, `supervisor.conf`
+
+#### **Drupal** (Enterprise CMS)
+- ✅ `sites/default/settings.php` (all backup variants)
+- ✅ `sites/default/files/` (all subdirectories: private, backup, tmp, config, styles, js, css, php, xmlsitemap, languages, translations)
+- ✅ `sites/all/modules/`, `themes/`, `libraries/`, `drush/`
+- ✅ `core/`, `vendor/` directories
+- ✅ `update.php`, `install.php`, `cron.php`, `xmlrpc.php`, `authorize.php`, `rebuild.php`
+- ✅ All `.well-known/` paths
+- ✅ `composer.json`, `composer.lock`
+
+#### **Joomla** (Popular CMS)
+- ✅ `configuration.php` (all backup variants: .bak, .old, .save, .swp, ~, .dist, .txt, .zip, .tar.gz)
+- ✅ `administrator/` directory (all subdirectories: components, modules, templates, language, manifests, logs, cache, tmp)
+- ✅ `components/`, `modules/`, `plugins/`, `templates/`, `language/`, `libraries/`, `media/`, `images/`, `includes/`, `cli/`, `bin/`
+- ✅ `cache/`, `tmp/`, `logs/` directories
+- ✅ All documentation files (CHANGELOG, README, LICENSE, etc.)
+- ✅ All CI/CD and config files
+
+#### **General Detection**
+- ✅ Source control: `.git/`, `.svn/`, `.hg/`
+- ✅ Database files: `.sql`, `.sqlite`, `.db`, `.dump`
+- ✅ Backup files: `.bak`, `.backup`, `.old`, `.orig`, `.save`, `.tmp`
+- ✅ Archive files: `.zip`, `.tar`, `.tar.gz`, `.tgz`, `.gz`, `.7z`, `.rar`
+- ✅ Log files: `.log`, `.trace`, `.out`, `.err`
+- ✅ Credentials: `id_rsa`, `.pem`, `.key`, `.crt`, `.htpasswd`, `passwords.txt`, `credentials.json`
+- ✅ Development files: `.DS_Store`, `Thumbs.db`, `package-lock.json`, `yarn.lock`
+- ✅ CI/CD: `.github/`, `.gitlab-ci.yml`, `Jenkinsfile`, `docker-compose.yml`, `Dockerfile`
+- ✅ Debug tools: `debug/`, `profiler/`, `xdebug/`, `blackfire/`
+
+### 📊 Detection Statistics
+
+| CMS/Framework | Patterns | Severity | Coverage |
+|---------------|----------|----------|----------|
+| **WordPress** | 60+      | HIGH     | ✅ Complete |
+| **Laravel**   | 200+     | HIGH     | ✅ Complete |
+| **Django**    | 50+      | HIGH     | ✅ Complete |
+| **Drupal**    | 80+      | HIGH     | ✅ Complete |
+| **Joomla**    | 100+     | HIGH     | ✅ Complete |
+| **General**   | 50+      | Various  | ✅ Complete |
+| **TOTAL**     | **540+** | -        | **✅ Comprehensive** |
+
 ### What This Tool Does NOT Do
 
 It does NOT:

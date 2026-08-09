@@ -231,12 +231,28 @@ class SecurityHTTPClient:
         response_sample = None
 
         if full_response and response.status_code == 200:
-            # Only parse HTML responses for content analysis
-            content_type = response.headers.get("content-type", "")
-            if "text/html" in content_type.lower():
-                # Get first few bytes for analysis
-                content = response.text[:5000] if hasattr(response, "text") else ""
-                response_sample = content
+            content_type = response.headers.get("content-type", "").lower()
+
+            # Capture a content sample for any text-based response so that
+            # sensitive files (.env, config, logs, etc.) can be content-verified
+            # and included as evidence. Binary responses are skipped.
+            is_textual = any(
+                t in content_type
+                for t in ("text/", "application/json", "application/xml",
+                          "application/javascript", "application/x-yaml",
+                          "application/yaml", "application/octet-stream")
+            ) or content_type == ""
+
+            if is_textual:
+                try:
+                    sample = response.text[:5000] if hasattr(response, "text") else ""
+                except Exception:
+                    sample = ""
+                response_sample = sample
+
+            # Only parse HTML responses for title / directory-listing analysis
+            if "text/html" in content_type:
+                content = response_sample or ""
 
                 # Simple title extraction
                 if "<title>" in content.lower():
@@ -325,3 +341,4 @@ class SecurityHTTPClient:
             ),
             "redirects_blocked": self.redirects_blocked,
         }
+
